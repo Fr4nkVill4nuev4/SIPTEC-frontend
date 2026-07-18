@@ -1,0 +1,14 @@
+{
+  "name": "siptec",
+  "version": "1.0.0",
+  "description": "Frontend SIPTEC conectado al backend Java Spring Boot",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "license": "MIT"
+}
