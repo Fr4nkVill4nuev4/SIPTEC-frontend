@@ -1,17 +1,17 @@
 async function apiFetch(path, options = {}) {
-  var useAuth = options.auth !== false;
-  var headers = { ...(options.headers || {}) };
+  const useAuth = options.auth !== false;
+  const headers = { ...(options.headers || {}) };
   if (useAuth && state.token) {
     headers.Authorization = `Bearer ${state.token}`;
   }
 
-  var origins = [API_FALLBACK_ORIGIN];
-  var lastError;
+  const origins = [API_FALLBACK_ORIGIN];
+  let lastError;
 
-  for (var origin of origins) {
+  for (const origin of origins) {
     try {
-      var response = await fetch(`${origin}${path}`, { ...options, headers });
-      var data = await response.json().catch(() => ({}));
+      const response = await fetch(`${origin}${path}`, { ...options, headers });
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(data.error || "Error al conectar con la API.");
       }
@@ -25,8 +25,8 @@ async function apiFetch(path, options = {}) {
 }
 async function loadAllData() {
   try {
-    var isIt = state.currentUser?.role === "IT";
-    var [items, loans, returns, users, history, reports] = await Promise.all([
+    const isIt = state.currentUser?.role === "IT";
+    const [items, loans, returns, users, history, reports] = await Promise.all([
       apiFetch("/api/inventory"),
       isIt ? Promise.resolve([]) : apiFetch("/api/loans"),
       isIt ? Promise.resolve([]) : apiFetch("/api/returns"),
