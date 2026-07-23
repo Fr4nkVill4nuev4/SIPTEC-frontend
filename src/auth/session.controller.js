@@ -1,9 +1,9 @@
 async function restoreSession() {
-  var saved = sessionStorage.getItem(SESSION_KEY);
+  const saved = sessionStorage.getItem(SESSION_KEY);
   if (!saved) return;
 
   try {
-    var session = JSON.parse(saved);
+    const session = JSON.parse(saved);
     state.token = session.token;
     state.currentUser = session.user;
 
