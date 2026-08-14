@@ -1,3 +1,188 @@
-﻿<h2>Devoluciones</h2>
-<div id="returnsGrid" class="return-grid"></div>
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPTEC - Devoluciones</title>
+  <link rel="icon" href="data:,">
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <!-- Google Fonts: IBM Plex Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Estilos -->
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
 
+  <div class="app-shell">
+    <!-- BARRA LATERAL (SIDEBAR EXACTA) -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="../images/logo.svg" alt="SIPTEC" class="sidebar-logo">
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link-item">
+          <i class="bi bi-house-door-fill"></i>
+          <span>Panel de<br>control</span>
+        </a>
+        <a href="inventory.html" class="nav-link-item">
+          <i class="bi bi-box-seam"></i>
+          <span>Inventario</span>
+        </a>
+        <a href="loans.html" class="nav-link-item">
+          <i class="bi bi-arrow-left-right"></i>
+          <span>Préstamos</span>
+        </a>
+        <a href="returns.html" class="nav-link-item active">
+          <i class="bi bi-arrow-counterclockwise"></i>
+          <span>Devoluciones</span>
+        </a>
+        <a href="users.html" class="nav-link-item">
+          <i class="bi bi-people-fill"></i>
+          <span>Usuarios</span>
+        </a>
+        <a href="reports.html" class="nav-link-item">
+          <i class="bi bi-file-earmark-text-fill"></i>
+          <span>Reportes</span>
+        </a>
+        <a href="history.html" class="nav-link-item">
+          <i class="bi bi-clock-history"></i>
+          <span>Historial</span>
+        </a>
+        <a href="settings.html" class="nav-link-item">
+          <i class="bi bi-gear-fill"></i>
+          <span>Configuración</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="logoutBtn" class="nav-link-item text-danger" style="background: transparent;">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Salir</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-search">
+            <i class="bi bi-search"></i>
+            <input id="returnsSearch" type="search" placeholder="Busca herramienta, usuario, Código...">
+          </div>
+          <button id="refreshBtn" class="topbar-btn" title="Actualizar">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-chip">
+            <i class="bi bi-calendar3"></i>
+            <span id="dateText">17 jul 2026</span>
+          </div>
+          <div class="topbar-chip">
+            <i class="bi bi-person-circle"></i>
+            <span id="userRoleText">Admin Principal (ADMINISTRADOR)</span>
+          </div>
+          <a href="../index.html" class="topbar-btn" title="Cerrar sesión">
+            <i class="bi bi-box-arrow-right"></i>
+          </a>
+        </div>
+      </header>
+
+      <!-- VISTA DEVOLUCIONES EXACTA A LAS IMÁGENES -->
+      <section class="page-container">
+        <div class="page-header">
+          <h1 class="page-title">Devoluciones</h1>
+        </div>
+
+        <!-- GRID DE TARJETAS DEVOLUCIONES -->
+        <div id="returnsGridContainer" class="returns-cards-grid">
+          <!-- TARJETA 1 -->
+          <div class="return-card-figma" data-id="1">
+            <div class="return-card-top-row">
+              <span class="badge-pill-state retrasado">Retrasado</span>
+              <span class="return-code-dim">código: CAA-120</span>
+            </div>
+            <div class="return-person-name">Marco Perez</div>
+            <div class="return-item-line">
+              <i class="bi bi-box"></i> Cautin
+            </div>
+            <div class="return-btn-row">
+              <button class="btn-devuelto" onclick="processReturnDirect(1)">Devuelto</button>
+              <button class="btn-reportar-dano" onclick="openDamageModal(1)">Reportar daño</button>
+            </div>
+          </div>
+
+          <!-- TARJETA 2 -->
+          <div class="return-card-figma" data-id="2">
+            <div class="return-card-top-row">
+              <span class="badge-pill-state revision">Revisión</span>
+              <span class="return-code-dim">código: SOL-001</span>
+            </div>
+            <div class="return-person-name">Soporte IT</div>
+            <div class="return-item-line">
+              <i class="bi bi-box"></i> Soldadora
+            </div>
+            <div class="return-btn-row">
+              <button class="btn-devuelto" onclick="processReturnDirect(2)">Devuelto</button>
+              <button class="btn-reportar-dano" onclick="openDamageModal(2)">Reportar daño</button>
+            </div>
+          </div>
+
+          <!-- TARJETA 3 -->
+          <div class="return-card-figma" data-id="3">
+            <div class="return-card-top-row">
+              <span class="badge-pill-state entiempo">En tiempo</span>
+              <span class="return-code-dim">código: MUL-010</span>
+            </div>
+            <div class="return-person-name">Leonardo Valladares</div>
+            <div class="return-item-line">
+              <i class="bi bi-box"></i> Multímetro
+            </div>
+            <div class="return-btn-row">
+              <button class="btn-devuelto" onclick="processReturnDirect(3)">Devuelto</button>
+              <button class="btn-reportar-dano" onclick="openDamageModal(3)">Reportar daño</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: REPORTAR DAÑO -->
+  <div class="modal fade" id="damageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form id="reportDamageForm" class="modal-content siptec-modal">
+        <div class="modal-header">
+          <h5 class="modal-title">Reportar daño</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p id="damageSummaryText" class="text-muted mb-3"></p>
+          <div class="mb-3">
+            <label class="form-label" for="damageDescription">Daños presentados</label>
+            <textarea id="damageDescription" class="form-control" rows="4" placeholder="Describe averías, piezas faltantes o fallos eléctricos..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-siptec-outline btn-siptec-sm" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn-siptec-warning btn-siptec-sm">Enviar reporte</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts Modulares -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="../config.js"></script>
+  <script src="../services/api.service.js"></script>
+  <script src="../services/auth.service.js"></script>
+  <script src="../services/returns.service.js"></script>
+  <script src="../controllers/layout.controller.js"></script>
+  <script src="../controllers/returns.controller.js"></script>
+</body>
+</html>

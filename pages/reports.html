@@ -1,11 +1,521 @@
-﻿<h2>Reportes</h2>
-<ul class="nav nav-tabs mb-3" id="reportTabs">
-  <li class="nav-item">
-    <button class="nav-link active" data-report-tab="history" type="button">Historial de reportes pasados</button>
-  </li>
-  <li class="nav-item">
-    <button class="nav-link" data-report-tab="generated" type="button">Reportes generados</button>
-  </li>
-</ul>
-<div id="reportsGrid" class="report-grid"></div>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPTEC - Reportes</title>
+  <link rel="icon" href="data:,">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
 
+  <style>
+    /* ====================================================
+       TABS — exactas a la imagen (línea debajo, fondo blanco activa)
+       ==================================================== */
+    .rpt-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 18px;
+      gap: 0;
+    }
+
+    .rpt-tab {
+      padding: 9px 20px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      transition: color 0.15s;
+      margin-bottom: -1px;
+    }
+
+    .rpt-tab.active {
+      color: var(--text-main);
+      background: var(--bg-card);
+      border-color: var(--border-color);
+      border-bottom: 1px solid var(--bg-card);
+    }
+
+    .rpt-tab:not(.active):hover { color: var(--text-main); }
+
+    /* ====================================================
+       GRID DE TARJETAS — 2 columnas exacto a la imagen
+       ==================================================== */
+    .rpt-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 720px) { .rpt-grid { grid-template-columns: 1fr; } }
+
+    /* ====================================================
+       TARJETA — fondo levemente distinto, igual a la imagen
+       ==================================================== */
+    .rpt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .rpt-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .rpt-card-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    .rpt-badge-general {
+      display: inline-block;
+      background: #16a34a;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 12px;
+      border-radius: 9999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .rpt-card-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .rpt-card-date {
+      font-size: 11.5px;
+      color: var(--text-dim);
+    }
+
+    /* ====================================================
+       BOTONES — Ver (outline), Exportar (verde), Papelera (rojo borde)
+       ==================================================== */
+    .rpt-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    /* Ver — borde gris, ícono ojo */
+    .btn-rpt-ver {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-rpt-ver:hover { background: var(--bg-input); }
+
+    /* Exportar — verde sólido con dropdown */
+    .btn-rpt-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      background: #16a34a;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-rpt-export:hover { background: #15803d; }
+    /* Split arrow del dropdown */
+    .btn-rpt-export .bi-caret-down-fill { font-size: 9px; }
+
+    /* Papelera — borde rojo, hover fondo rojo */
+    .btn-rpt-delete {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 29px;
+      height: 29px;
+      background: transparent;
+      border: 1px solid #dc2626;
+      color: #dc2626;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 12.5px;
+    }
+    .btn-rpt-delete:hover { background: #dc2626; color: #fff; }
+
+    /* ====================================================
+       DROPDOWN EXPORTAR
+       ==================================================== */
+    .rpt-dropdown-menu {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 4px 0;
+      min-width: 155px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    }
+    .rpt-dropdown-menu .dropdown-item {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-main);
+      padding: 8px 14px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .rpt-dropdown-menu .dropdown-item:hover { background: var(--bg-input); }
+
+    /* Panel oculto/visible */
+    .rpt-panel { display: none; }
+    .rpt-panel.active { display: block; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ─── SIDEBAR ─────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="../images/logo.svg" alt="SIPTEC" class="sidebar-logo">
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-link-item">
+        <i class="bi bi-house-door-fill"></i>
+        <span>Panel de<br>control</span>
+      </a>
+      <a href="inventory.html" class="nav-link-item">
+        <i class="bi bi-box-seam"></i>
+        <span>Inventario</span>
+      </a>
+      <a href="loans.html" class="nav-link-item">
+        <i class="bi bi-arrow-left-right"></i>
+        <span>Préstamos</span>
+      </a>
+      <a href="returns.html" class="nav-link-item">
+        <i class="bi bi-arrow-counterclockwise"></i>
+        <span>Devoluciones</span>
+      </a>
+      <a href="users.html" class="nav-link-item">
+        <i class="bi bi-people-fill"></i>
+        <span>Usuarios</span>
+      </a>
+      <a href="reports.html" class="nav-link-item active">
+        <i class="bi bi-file-earmark-text-fill"></i>
+        <span>Reportes</span>
+      </a>
+      <a href="history.html" class="nav-link-item">
+        <i class="bi bi-clock-history"></i>
+        <span>Historial</span>
+      </a>
+      <a href="settings.html" class="nav-link-item">
+        <i class="bi bi-gear-fill"></i>
+        <span>Configuración</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="logoutBtn" class="nav-link-item" style="color:#ef4444;background:transparent;">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Salir</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ──────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-search">
+          <i class="bi bi-search"></i>
+          <input type="search" placeholder="Busca herramienta, usuario, Código...">
+        </div>
+        <button id="refreshBtn" class="topbar-btn" title="Actualizar">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-chip">
+          <i class="bi bi-calendar3"></i>
+          <span id="dateText">17 jul 2026</span>
+        </div>
+        <div class="topbar-chip">
+          <i class="bi bi-person-circle"></i>
+          <span id="userRoleText">Admin Principal (ADMINISTRADOR)</span>
+        </div>
+        <a href="../index.html" class="topbar-btn" title="Cerrar sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </a>
+      </div>
+    </header>
+
+    <!-- PÁGINA -->
+    <section class="page-container">
+
+      <div class="page-header">
+        <h1 class="page-title">Reportes</h1>
+      </div>
+
+      <!-- ─── TABS ─── -->
+      <div class="rpt-tabs">
+        <button class="rpt-tab active" data-tab="history">Historial de reportes pasados</button>
+        <button class="rpt-tab" data-tab="generated">Reportes generados</button>
+      </div>
+
+      <!-- ─── PANEL: Historial ─── -->
+      <div class="rpt-panel active" id="panelHistory">
+        <div class="rpt-grid" id="reportsGridContainer">
+
+          <!-- TARJETA 1 -->
+          <div class="rpt-card" data-id="1">
+            <div class="rpt-card-header">
+              <span class="rpt-card-title">Reporte de préstamos activos</span>
+              <span class="rpt-badge-general">General</span>
+            </div>
+            <p class="rpt-card-desc">Generado por Admin Principal. Resumen de préstamos activos en la plataforma.</p>
+            <div class="rpt-card-date">Fecha: 15/07/26, 9:24 p. m.</div>
+            <div class="rpt-actions">
+              <button class="btn-rpt-ver" onclick="openReportViewer(1)">
+                <i class="bi bi-eye"></i> Ver
+              </button>
+              <div class="dropdown">
+                <button class="btn-rpt-export dropdown-toggle" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-upload"></i> Exportar
+                </button>
+                <ul class="dropdown-menu rpt-dropdown-menu">
+                  <li><button class="dropdown-item" onclick="exportReport(1,'txt')">
+                    <i class="bi bi-file-text"></i> Texto (.TXT)</button></li>
+                  <li><button class="dropdown-item" onclick="exportReport(1,'pdf')">
+                    <i class="bi bi-printer"></i> Imprimir PDF</button></li>
+                  <li><button class="dropdown-item" onclick="exportReport(1,'csv')">
+                    <i class="bi bi-filetype-csv"></i> Archivo CSV</button></li>
+                  <li><button class="dropdown-item" onclick="exportReport(1,'excel')">
+                    <i class="bi bi-file-earmark-excel"></i> Excel (.XLS)</button></li>
+                </ul>
+              </div>
+              <button class="btn-rpt-delete" onclick="deleteReport(1)" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- TARJETA 2 -->
+          <div class="rpt-card" data-id="2">
+            <div class="rpt-card-header">
+              <span class="rpt-card-title">Herramientas más usadas</span>
+              <span class="rpt-badge-general">General</span>
+            </div>
+            <p class="rpt-card-desc">Generado por Admin Principal. Reporte resumido para seguimiento de inventario.</p>
+            <div class="rpt-card-date">Fecha: 15/07/26, 9:24 p. m.</div>
+            <div class="rpt-actions">
+              <button class="btn-rpt-ver" onclick="openReportViewer(2)">
+                <i class="bi bi-eye"></i> Ver
+              </button>
+              <div class="dropdown">
+                <button class="btn-rpt-export dropdown-toggle" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-upload"></i> Exportar
+                </button>
+                <ul class="dropdown-menu rpt-dropdown-menu">
+                  <li><button class="dropdown-item" onclick="exportReport(2,'txt')">
+                    <i class="bi bi-file-text"></i> Texto (.TXT)</button></li>
+                  <li><button class="dropdown-item" onclick="exportReport(2,'pdf')">
+                    <i class="bi bi-printer"></i> Imprimir PDF</button></li>
+                  <li><button class="dropdown-item" onclick="exportReport(2,'csv')">
+                    <i class="bi bi-filetype-csv"></i> Archivo CSV</button></li>
+                  <li><button class="dropdown-item" onclick="exportReport(2,'excel')">
+                    <i class="bi bi-file-earmark-excel"></i> Excel (.XLS)</button></li>
+                </ul>
+              </div>
+              <button class="btn-rpt-delete" onclick="deleteReport(2)" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /.rpt-grid -->
+      </div><!-- /#panelHistory -->
+
+      <!-- ─── PANEL: Reportes generados ─── -->
+      <div class="rpt-panel" id="panelGenerated">
+        <div class="rpt-grid" id="generatedGridContainer">
+
+          <div class="rpt-card" data-id="3">
+            <div class="rpt-card-header">
+              <span class="rpt-card-title">Reporte de inventario completo</span>
+              <span class="rpt-badge-general">General</span>
+            </div>
+            <p class="rpt-card-desc">Generado por Admin Principal. Listado completo del inventario con estado actual.</p>
+            <div class="rpt-card-date">Fecha: 17/07/26, 10:00 a. m.</div>
+            <div class="rpt-actions">
+              <button class="btn-rpt-ver" onclick="openReportViewer(3)">
+                <i class="bi bi-eye"></i> Ver
+              </button>
+              <div class="dropdown">
+                <button class="btn-rpt-export dropdown-toggle" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-upload"></i> Exportar
+                </button>
+                <ul class="dropdown-menu rpt-dropdown-menu">
+                  <li><button class="dropdown-item" onclick="exportReport(3,'txt')">
+                    <i class="bi bi-file-text"></i> Texto (.TXT)</button></li>
+                  <li><button class="dropdown-item" onclick="exportReport(3,'pdf')">
+                    <i class="bi bi-printer"></i> Imprimir PDF</button></li>
+                  <li><button class="dropdown-item" onclick="exportReport(3,'csv')">
+                    <i class="bi bi-filetype-csv"></i> Archivo CSV</button></li>
+                  <li><button class="dropdown-item" onclick="exportReport(3,'excel')">
+                    <i class="bi bi-file-earmark-excel"></i> Excel (.XLS)</button></li>
+                </ul>
+              </div>
+              <button class="btn-rpt-delete" onclick="deleteReport(3)" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /#panelGenerated -->
+
+    </section>
+  </main>
+</div>
+
+<!-- ─── MODAL VISOR ─── -->
+<div class="modal fade" id="reportViewerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content siptec-modal">
+      <div class="modal-header">
+        <div>
+          <h5 id="reportModalTitle" class="modal-title">Visor de Reporte</h5>
+          <small id="reportModalMeta" class="text-muted"></small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <pre id="reportModalContent" style="background:var(--bg-input);padding:16px;border-radius:8px;color:var(--text-main);font-family:monospace;white-space:pre-wrap;font-size:12.5px;margin:0;"></pre>
+      </div>
+      <div class="modal-footer" style="gap:8px;">
+        <button class="btn-rpt-ver" data-bs-dismiss="modal">Cerrar</button>
+        <button class="btn-rpt-export" onclick="window.print()">
+          <i class="bi bi-printer"></i> Imprimir
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SCRIPTS ─── -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="../config.js"></script>
+<script src="../services/api.service.js"></script>
+<script src="../services/auth.service.js"></script>
+<script src="../services/reports.service.js"></script>
+<script src="../controllers/layout.controller.js"></script>
+<script src="../controllers/reports.controller.js"></script>
+<script>
+  /* ── Tabs ── */
+  document.querySelectorAll('.rpt-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.rpt-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.rpt-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab === 'history' ? 'panelHistory' : 'panelGenerated')
+              .classList.add('active');
+    });
+  });
+
+  /* ── Datos de demo por ID ── */
+  const REPORT_DATA = {
+    1: {
+      title: 'Reporte de préstamos activos',
+      body: `SIPTEC — Reporte de Préstamos Activos
+Fecha: 15/07/2026  |  Generado por: Admin Principal
+
+┌──────────┬───────────────────┬─────────────┬────────────┐
+│ Código   │ Herramienta       │ Usuario     │ Desde      │
+├──────────┼───────────────────┼─────────────┼────────────┤
+│ CAA-120  │ Cautín            │ Marco Perez │ 2026-07-10 │
+│ MUL-010  │ Multímetro        │ Brandon     │ 2026-07-12 │
+└──────────┴───────────────────┴─────────────┴────────────┘`
+    },
+    2: {
+      title: 'Herramientas más usadas',
+      body: `SIPTEC — Herramientas Más Usadas
+Fecha: 15/07/2026  |  Generado por: Admin Principal
+
+1. CAA-120  Cautín           — 12 préstamos
+2. MRT-009  Martillo         —  9 préstamos
+3. EQP-065  Equipo de sonido —  7 préstamos
+4. MUL-010  Multímetro       —  5 préstamos`
+    },
+    3: {
+      title: 'Reporte de inventario completo',
+      body: `SIPTEC — Inventario Completo
+Fecha: 17/07/2026  |  Generado por: Admin Principal
+
+CAA-120  Cautín              Prestado
+MRT-009  Martillo            Disponible
+MUL-010  Multímetro          Prestado
+SOL-001  Soldadora           Dañado
+EQP-065  Equipo de sonido    Disponible
+PC001    Computadora         Disponible`
+    }
+  };
+
+  function openReportViewer(id) {
+    const r = REPORT_DATA[id] || { title: 'Reporte', body: 'Sin datos.' };
+    document.getElementById('reportModalTitle').textContent = r.title;
+    document.getElementById('reportModalMeta').textContent  = 'Generado por Admin Principal';
+    document.getElementById('reportModalContent').textContent = r.body;
+    new bootstrap.Modal(document.getElementById('reportViewerModal')).show();
+  }
+
+  function deleteReport(id) {
+    if (!confirm('¿Eliminar este reporte?')) return;
+    const card = document.querySelector(`.rpt-card[data-id="${id}"]`);
+    if (card) {
+      card.style.transition = 'opacity 0.3s';
+      card.style.opacity = '0';
+      setTimeout(() => card.remove(), 300);
+    }
+    if (typeof showToast === 'function') showToast('Reporte eliminado.', 'success');
+  }
+
+  function exportReport(id, format) {
+    if (typeof showToast === 'function')
+      showToast(`Exportando como ${format.toUpperCase()}…`, 'info');
+  }
+</script>
+</body>
+</html>

@@ -1,21 +1,272 @@
-﻿<h2>Bienvenido, Administrador</h2>
-<div id="apiStatus" class="api-note"></div>
-<div id="statsGrid" class="stat-grid"></div>
-<div class="dashboard-grid">
-  <div class="panel">
-    <p class="panel-title">Préstamos por semana</p>
-    <div id="weeklyBars" class="chart-bars"></div>
-  </div>
-  <div class="panel">
-    <p class="panel-title">Estado del inventario</p>
-    <div class="pie-wrap">
-      <div class="pie"></div>
-      <div id="inventoryLegend" class="legend"></div>
-    </div>
-  </div>
-</div>
-<div class="panel mt-3">
-  <p class="panel-title">Actividad reciente</p>
-  <div id="recentActivity"></div>
-</div>
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPTEC - Panel de Control</title>
+  <link rel="icon" href="data:,">
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <!-- Google Fonts: IBM Plex Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Estilos -->
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
 
+  <div class="app-shell">
+    <!-- BARRA LATERAL (SIDEBAR EXACTA A LAS IMÁGENES) -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="../images/logo.svg" alt="SIPTEC" class="sidebar-logo">
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link-item active">
+          <i class="bi bi-house-door-fill"></i>
+          <span>Panel de<br>control</span>
+        </a>
+        <a href="inventory.html" class="nav-link-item">
+          <i class="bi bi-box-seam"></i>
+          <span>Inventario</span>
+        </a>
+        <a href="loans.html" class="nav-link-item">
+          <i class="bi bi-arrow-left-right"></i>
+          <span>Préstamos</span>
+        </a>
+        <a href="returns.html" class="nav-link-item">
+          <i class="bi bi-arrow-counterclockwise"></i>
+          <span>Devoluciones</span>
+        </a>
+        <a href="users.html" class="nav-link-item">
+          <i class="bi bi-people-fill"></i>
+          <span>Usuarios</span>
+        </a>
+        <a href="reports.html" class="nav-link-item">
+          <i class="bi bi-file-earmark-text-fill"></i>
+          <span>Reportes</span>
+        </a>
+        <a href="history.html" class="nav-link-item">
+          <i class="bi bi-clock-history"></i>
+          <span>Historial</span>
+        </a>
+        <a href="settings.html" class="nav-link-item">
+          <i class="bi bi-gear-fill"></i>
+          <span>Configuración</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="logoutBtn" class="nav-link-item text-danger" style="background: transparent;">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Salir</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+      <!-- BARRA SUPERIOR (TOPBAR EXACTA A LAS IMÁGENES) -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-search">
+            <i class="bi bi-search"></i>
+            <input type="search" placeholder="Busca herramienta, usuario, Código...">
+          </div>
+          <button id="refreshBtn" class="topbar-btn" title="Actualizar">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-chip">
+            <i class="bi bi-calendar3"></i>
+            <span id="dateText">17 jul 2026</span>
+          </div>
+          <div class="topbar-chip">
+            <i class="bi bi-person-circle"></i>
+            <span id="userRoleText">Admin Principal (ADMINISTRADOR)</span>
+          </div>
+          <a href="../index.html" class="topbar-btn" title="Cerrar sesión">
+            <i class="bi bi-box-arrow-right"></i>
+          </a>
+        </div>
+      </header>
+
+      <!-- PÁGINA DASHBOARD -->
+      <section class="page-container">
+        <div class="page-header">
+          <div>
+            <h1 id="dashboardGreeting" class="page-title">Bienvenido, Admin Principal</h1>
+            <p id="dashboardSubtitle" class="page-subtitle">Datos sincronizados con la plataforma.</p>
+          </div>
+        </div>
+
+        <!-- 4 TARJETAS DE ESTADÍSTICAS EXACTAS A LA CAPTURA -->
+        <div class="stats-grid">
+          <!-- 1. Inventario -->
+          <div class="stat-card">
+            <div class="stat-icon-wrap stat-icon-blue">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div>
+              <div id="statTotalItems" class="stat-value">6</div>
+              <div class="stat-label">Inventario</div>
+            </div>
+          </div>
+
+          <!-- 2. Disponibles -->
+          <div class="stat-card">
+            <div class="stat-icon-wrap stat-icon-green">
+              <i class="bi bi-check2"></i>
+            </div>
+            <div>
+              <div id="statAvailableItems" class="stat-value">3</div>
+              <div class="stat-label">Disponibles</div>
+            </div>
+          </div>
+
+          <!-- 3. Préstamos -->
+          <div class="stat-card">
+            <div class="stat-icon-wrap stat-icon-orange">
+              <i class="bi bi-arrow-left-right"></i>
+            </div>
+            <div>
+              <div id="statActiveLoans" class="stat-value">2</div>
+              <div class="stat-label">Préstamos</div>
+            </div>
+          </div>
+
+          <!-- 4. Solicitudes -->
+          <div class="stat-card">
+            <div class="stat-icon-wrap stat-icon-purple">
+              <i class="bi bi-bell"></i>
+            </div>
+            <div>
+              <div id="statPendingReturns" class="stat-value">1</div>
+              <div class="stat-label">Solicitudes</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILA DE GRÁFICOS (PRÉSTAMOS POR SEMANA Y ESTADO DEL INVENTARIO) -->
+        <div class="dashboard-grid">
+          <!-- PRÉSTAMOS POR SEMANA -->
+          <div class="panel-box">
+            <div class="panel-title">Préstamos por semana</div>
+            <div class="bar-chart-container">
+              <div class="bar-col">
+                <div class="bar-fill" style="height: 38%;">38</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-fill" style="height: 72%;">72</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-fill" style="height: 64%;">64</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-fill" style="height: 82%;">82</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-fill" style="height: 55%;">55</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-fill" style="height: 44%;">44</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar-fill" style="height: 30%;">30</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ESTADO DEL INVENTARIO -->
+          <div class="panel-box">
+            <div class="panel-title">Estado del inventario</div>
+            <div class="pie-chart-wrap">
+              <div class="css-pie"></div>
+              <div class="pie-legend">
+                <div class="legend-item">
+                  <span class="legend-dot" style="background-color: #1880e6;"></span>
+                  <span id="legendAvailable">Disponible 3</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot" style="background-color: #22c55e;"></span>
+                  <span id="legendBorrowed">Prestado 2</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot" style="background-color: #eab308;"></span>
+                  <span id="legendMaintenance">Dañados 1</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVIDAD RECIENTE -->
+        <div class="panel-box">
+          <div class="panel-title">Actividad reciente</div>
+          <div class="table-responsive">
+            <table class="siptec-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Herramienta</th>
+                  <th>Inicio</th>
+                  <th>Entrega</th>
+                  <th>Usuario</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="recentActivityTable">
+                <tr>
+                  <td><strong>EQP-065</strong></td>
+                  <td>Equipo de sonido</td>
+                  <td>2026-06-13</td>
+                  <td>2026-07-17</td>
+                  <td>Marco Perez</td>
+                  <td><span class="badge-pill-state devuelto">Devuelto</span></td>
+                </tr>
+                <tr>
+                  <td><strong>EQP-065</strong></td>
+                  <td>Equipo de sonido</td>
+                  <td>2026-06-12</td>
+                  <td>2026-06-13</td>
+                  <td>Henry</td>
+                  <td><span class="badge-pill-state devuelto">Devuelto</span></td>
+                </tr>
+                <tr>
+                  <td><strong>SOL-001</strong></td>
+                  <td>Soldadora</td>
+                  <td>2026-06-10</td>
+                  <td>2026-06-13</td>
+                  <td>Karla</td>
+                  <td><span class="badge-pill-state prestado">Prestado</span></td>
+                </tr>
+                <tr>
+                  <td><strong>MRT-009</strong></td>
+                  <td>Martillo</td>
+                  <td>2026-06-10</td>
+                  <td>2026-06-13</td>
+                  <td>Carlos</td>
+                  <td><span class="badge-pill-state retrasado">Retrasado</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scripts Modulares -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="../config.js"></script>
+  <script src="../services/api.service.js"></script>
+  <script src="../services/auth.service.js"></script>
+  <script src="../services/inventory.service.js"></script>
+  <script src="../services/loans.service.js"></script>
+  <script src="../services/returns.service.js"></script>
+  <script src="../controllers/layout.controller.js"></script>
+  <script src="../controllers/dashboard.controller.js"></script>
+</body>
+</html>
