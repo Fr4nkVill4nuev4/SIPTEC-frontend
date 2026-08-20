@@ -1,10 +1,19 @@
 /**
  * SIPTEC - Servicio de Historial
- * Conecta con `/api/history` en el backend Java Spring Boot.
+ * La API no tiene modulo separado de historial; se deriva de /api/prestamo.
  */
 const historyService = {
   async getAll() {
-    return await apiService.request(SIPTEC_CONFIG.ENDPOINTS.HISTORY, { method: "GET" });
+    const loans = await loansService.getAll();
+    return loans.map(loan => ({
+      id: loan.id,
+      code: loan.code,
+      item: loan.product || "",
+      start: loan.startDate || "",
+      end: loan.returnedAt || loan.expectedDate || "",
+      user: loan.user || "",
+      status: loan.returnedAt ? "Devuelto" : loan.state || "Pendiente"
+    }));
   }
 };
 

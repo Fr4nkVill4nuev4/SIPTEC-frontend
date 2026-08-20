@@ -47,7 +47,7 @@ function initSettingsController() {
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3000);
-        const res = await fetch(`${newUrl}/api/inventory`, { signal: controller.signal }).catch(() => null);
+        const res = await fetch(`${newUrl}/api/herramientas`, { signal: controller.signal }).catch(() => null);
         clearTimeout(timeout);
 
         if (res && res.ok) {
@@ -79,3 +79,4 @@ function initSettingsController() {
     });
   });
 }
+

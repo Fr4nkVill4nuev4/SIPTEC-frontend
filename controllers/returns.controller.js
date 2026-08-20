@@ -21,7 +21,9 @@ async function loadReturns() {
       renderReturnsGrid(currentReturns);
     }
   } catch (error) {
-    console.warn("Usando tarjetas maquetadas en HTML de devoluciones.", error);
+    console.warn("No se pudo cargar devoluciones desde la API.", error);
+    currentReturns = [];
+    renderReturnsGrid([]);
   }
 }
 
@@ -156,3 +158,5 @@ function escapeHtml(str) {
 
 window.processReturnDirect = processReturnDirect;
 window.openDamageModal = openDamageModal;
+
+

@@ -24,7 +24,10 @@ async function loadLoans() {
       }
     }
   } catch (error) {
-    console.warn("Usando filas maquetadas en HTML de préstamos.", error);
+    console.warn("No se pudo cargar préstamos desde la API.", error);
+    currentLoans = [];
+    renderLoansTable([]);
+    clearLoanDetail();
   }
 }
 
@@ -72,6 +75,21 @@ function selectLoan(id) {
   renderLoansTable(currentLoans);
 }
 
+
+function clearLoanDetail() {
+  const titleEl = document.querySelector("#detailTitle");
+  const badgeEl = document.querySelector("#detailBadge");
+  const descEl = document.querySelector("#detailDescription");
+  const stateEl = document.querySelector("#detailMaterialState");
+
+  if (titleEl) titleEl.textContent = "Préstamo";
+  if (badgeEl) {
+    badgeEl.className = "badge-pill-state pendiente";
+    badgeEl.textContent = "Sin datos";
+  }
+  if (descEl) descEl.textContent = "";
+  if (stateEl) stateEl.textContent = "";
+}
 function bindLoansEvents() {
   const searchInput = document.querySelector("#loansSearch, #globalSearch");
   if (searchInput) {
@@ -132,3 +150,5 @@ function escapeHtml(str) {
 }
 
 window.selectLoan = selectLoan;
+
+

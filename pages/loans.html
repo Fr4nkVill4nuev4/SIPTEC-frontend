@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -51,6 +51,10 @@
         <a href="history.html" class="nav-link-item">
           <i class="bi bi-clock-history"></i>
           <span>Historial</span>
+        </a>
+        <a href="tipo-area.html" class="nav-link-item">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <span>Tipo<br>área</span>
         </a>
         <a href="settings.html" class="nav-link-item">
           <i class="bi bi-gear-fill"></i>
@@ -111,46 +115,25 @@
                   <th>Producto</th>
                 </tr>
               </thead>
-              <tbody id="loansTableBody">
-                <tr onclick="selectLoan(1)" style="cursor: pointer;">
-                  <td><strong>PR-001</strong></td>
-                  <td>Marco Perez</td>
-                  <td>2026-06-13</td>
-                  <td>Cautin</td>
-                </tr>
-                <tr onclick="selectLoan(2)" class="table-active" style="cursor: pointer;">
-                  <td><strong>PR-002</strong></td>
-                  <td>Soporte IT</td>
-                  <td>2026-06-13</td>
-                  <td>Martillo</td>
-                </tr>
-                <tr onclick="selectLoan(3)" style="cursor: pointer;">
-                  <td><strong>PR-006</strong></td>
-                  <td>Leonardo Valladares</td>
-                  <td>2026-07-27</td>
-                  <td>Multímetro</td>
-                </tr>
-              </tbody>
+              <tbody id="loansTableBody"></tbody>
             </table>
           </div>
 
           <!-- PANEL LATERAL DE DETALLE DE PRÉSTAMO (FIGMA EXACTO) -->
           <div class="loan-detail-box">
             <div class="loan-detail-header">
-              <strong id="detailTitle" style="font-size: 15px;">Préstamo PR-002</strong>
-              <span id="detailBadge" class="badge-pill-state pendiente">Pendiente</span>
+              <strong id="detailTitle" style="font-size: 15px;">Préstamo</strong>
+              <span id="detailBadge" class="badge-pill-state pendiente">Sin datos</span>
             </div>
 
             <div>
               <span class="text-muted" style="font-size: 12px;">Descripción</span>
-              <div id="detailDescription" class="loan-white-card mt-1">
-                Soporte IT solicita Martillo.
-              </div>
+              <div id="detailDescription" class="loan-white-card mt-1"></div>
             </div>
 
             <div>
               <span class="text-muted" style="font-size: 12px;">Estado del material</span>
-              <div id="detailMaterialState" class="fw-bold mt-1" style="font-size: 14px;">Pendiente</div>
+              <div id="detailMaterialState" class="fw-bold mt-1" style="font-size: 14px;"></div>
             </div>
 
             <!-- BOTONES APROBAR Y RECHAZAR -->
@@ -178,3 +161,10 @@
   <script src="../controllers/loans.controller.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+

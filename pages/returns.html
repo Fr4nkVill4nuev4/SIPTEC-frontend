@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -52,6 +52,10 @@
           <i class="bi bi-clock-history"></i>
           <span>Historial</span>
         </a>
+        <a href="tipo-area.html" class="nav-link-item">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <span>Tipo<br>área</span>
+        </a>
         <a href="settings.html" class="nav-link-item">
           <i class="bi bi-gear-fill"></i>
           <span>Configuración</span>
@@ -100,55 +104,7 @@
         </div>
 
         <!-- GRID DE TARJETAS DEVOLUCIONES -->
-        <div id="returnsGridContainer" class="returns-cards-grid">
-          <!-- TARJETA 1 -->
-          <div class="return-card-figma" data-id="1">
-            <div class="return-card-top-row">
-              <span class="badge-pill-state retrasado">Retrasado</span>
-              <span class="return-code-dim">código: CAA-120</span>
-            </div>
-            <div class="return-person-name">Marco Perez</div>
-            <div class="return-item-line">
-              <i class="bi bi-box"></i> Cautin
-            </div>
-            <div class="return-btn-row">
-              <button class="btn-devuelto" onclick="processReturnDirect(1)">Devuelto</button>
-              <button class="btn-reportar-dano" onclick="openDamageModal(1)">Reportar daño</button>
-            </div>
-          </div>
-
-          <!-- TARJETA 2 -->
-          <div class="return-card-figma" data-id="2">
-            <div class="return-card-top-row">
-              <span class="badge-pill-state revision">Revisión</span>
-              <span class="return-code-dim">código: SOL-001</span>
-            </div>
-            <div class="return-person-name">Soporte IT</div>
-            <div class="return-item-line">
-              <i class="bi bi-box"></i> Soldadora
-            </div>
-            <div class="return-btn-row">
-              <button class="btn-devuelto" onclick="processReturnDirect(2)">Devuelto</button>
-              <button class="btn-reportar-dano" onclick="openDamageModal(2)">Reportar daño</button>
-            </div>
-          </div>
-
-          <!-- TARJETA 3 -->
-          <div class="return-card-figma" data-id="3">
-            <div class="return-card-top-row">
-              <span class="badge-pill-state entiempo">En tiempo</span>
-              <span class="return-code-dim">código: MUL-010</span>
-            </div>
-            <div class="return-person-name">Leonardo Valladares</div>
-            <div class="return-item-line">
-              <i class="bi bi-box"></i> Multímetro
-            </div>
-            <div class="return-btn-row">
-              <button class="btn-devuelto" onclick="processReturnDirect(3)">Devuelto</button>
-              <button class="btn-reportar-dano" onclick="openDamageModal(3)">Reportar daño</button>
-            </div>
-          </div>
-        </div>
+        <div id="returnsGridContainer" class="returns-cards-grid"></div>
       </section>
     </main>
   </div>
@@ -181,8 +137,16 @@
   <script src="../config.js"></script>
   <script src="../services/api.service.js"></script>
   <script src="../services/auth.service.js"></script>
+  <script src="../services/loans.service.js"></script>
   <script src="../services/returns.service.js"></script>
   <script src="../controllers/layout.controller.js"></script>
   <script src="../controllers/returns.controller.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+

@@ -20,13 +20,19 @@ async function loadInventory() {
       renderInventoryTable(currentInventoryItems);
     }
   } catch (error) {
-    console.warn("Usando filas maquetadas en HTML de inventario.", error);
+    console.warn("No se pudo cargar inventario desde la API.", error);
+    currentInventoryItems = [];
+    renderInventoryTable([]);
   }
 }
 
 function renderInventoryTable(items) {
   const tbody = document.querySelector("#inventoryTableBody");
-  if (!tbody || !items || !items.length) return;
+  if (!tbody || !items) return;
+  if (!items.length) {
+    tbody.innerHTML = "";
+    return;
+  }
 
   tbody.innerHTML = items.map(item => {
     const status = item.status || "Disponible";
@@ -222,3 +228,7 @@ function escapeHtml(str) {
 window.openEditModal = openEditModal;
 window.toggleItemStatus = toggleItemStatus;
 window.deleteItemDirect = deleteItemDirect;
+
+
+
+

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -51,6 +51,10 @@
         <a href="history.html" class="nav-link-item">
           <i class="bi bi-clock-history"></i>
           <span>Historial</span>
+        </a>
+        <a href="tipo-area.html" class="nav-link-item">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <span>Tipo<br>área</span>
         </a>
         <a href="settings.html" class="nav-link-item">
           <i class="bi bi-gear-fill"></i>
@@ -115,68 +119,7 @@
                 <th>Acciones</th>
               </tr>
             </thead>
-            <tbody id="usersTableBody">
-              <tr data-id="1">
-                <td><strong>Admin Principal</strong></td>
-                <td>admin@correo.com</td>
-                <td>ADMINISTRADOR</td>
-                <td>ITR</td>
-                <td><span class="badge-pill-state activo">Activo</span></td>
-                <td>
-                  <div class="action-btn-group">
-                    <button class="btn-table-action" onclick="openEditUserModal(1)" title="Editar"><i class="bi bi-pencil"></i></button>
-                  </div>
-                </td>
-              </tr>
-              <tr data-id="2">
-                <td><strong>Marco Perez</strong></td>
-                <td>marco@siptec.edu</td>
-                <td>EMPLEADO</td>
-                <td>ITR</td>
-                <td><span class="badge-pill-state activo">Activo</span></td>
-                <td>
-                  <div class="action-btn-group">
-                    <button class="btn-table-action" onclick="openEditUserModal(2)" title="Editar"><i class="bi bi-pencil"></i></button>
-                  </div>
-                </td>
-              </tr>
-              <tr data-id="3">
-                <td><strong>Soporte IT</strong></td>
-                <td>it@siptec.edu</td>
-                <td>IT</td>
-                <td>CFP</td>
-                <td><span class="badge-pill-state activo">Activo</span></td>
-                <td>
-                  <div class="action-btn-group">
-                    <button class="btn-table-action" onclick="openEditUserModal(3)" title="Editar"><i class="bi bi-pencil"></i></button>
-                  </div>
-                </td>
-              </tr>
-              <tr data-id="4">
-                <td><strong>Melissa Melendez</strong></td>
-                <td>melissa@gmail.com</td>
-                <td>EMPLEADO</td>
-                <td>ITR</td>
-                <td><span class="badge-pill-state activo">Activo</span></td>
-                <td>
-                  <div class="action-btn-group">
-                    <button class="btn-table-action" onclick="openEditUserModal(4)" title="Editar"><i class="bi bi-pencil"></i></button>
-                  </div>
-                </td>
-              </tr>
-              <tr data-id="5">
-                <td><strong>Leonardo Valladares</strong></td>
-                <td>20240848@ricaldone.edu.sv</td>
-                <td>EMPLEADO</td>
-                <td>CFP</td>
-                <td><span class="badge-pill-state activo">Activo</span></td>
-                <td>
-                  <div class="action-btn-group">
-                    <button class="btn-table-action" onclick="openEditUserModal(5)" title="Editar"><i class="bi bi-pencil"></i></button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+            <tbody id="usersTableBody"></tbody>
           </table>
         </div>
       </section>
@@ -200,19 +143,20 @@
             <label class="form-label" for="userEmail">Correo electrónico</label>
             <input id="userEmail" class="form-control" type="email" required>
           </div>
+          <div class="col-12">
+            <label class="form-label" for="userPassword">Contraseña temporal</label>
+            <input id="userPassword" class="form-control" type="password" minlength="5" required autocomplete="new-password">
+          </div>
           <div class="col-6">
             <label class="form-label" for="userRole">Rol</label>
-            <select id="userRole" class="form-select">
-              <option value="EMPLEADO">EMPLEADO</option>
-              <option value="ADMINISTRADOR">ADMINISTRADOR</option>
-              <option value="IT">IT</option>
+            <select id="userRole" class="form-select" required>
+              <option value="">Cargando roles...</option>
             </select>
           </div>
           <div class="col-6">
-            <label class="form-label" for="userSection">Sección / Institución</label>
-            <select id="userSection" class="form-select">
-              <option value="ITR">ITR</option>
-              <option value="CFP">CFP</option>
+            <label class="form-label" for="userSection">Institución</label>
+            <select id="userSection" class="form-select" required>
+              <option value="">Cargando instituciones...</option>
             </select>
           </div>
         </div>
@@ -271,8 +215,18 @@
   <script src="../config.js"></script>
   <script src="../services/api.service.js"></script>
   <script src="../services/auth.service.js"></script>
-  <script src="../services/users.service.js"></script>
+  <script src="../services/users.service.js?v=users-api-2"></script>
   <script src="../controllers/layout.controller.js"></script>
-  <script src="../controllers/users.controller.js"></script>
+  <script src="../controllers/users.controller.js?v=users-api-2"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+

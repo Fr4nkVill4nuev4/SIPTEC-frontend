@@ -20,7 +20,9 @@ async function loadHistory() {
       renderHistoryTable(currentHistory);
     }
   } catch (error) {
-    console.warn("Usando filas maquetadas en HTML de historial.", error);
+    console.warn("No se pudo cargar historial desde la API.", error);
+    currentHistory = [];
+    renderHistoryTable([]);
   }
 }
 
@@ -108,3 +110,5 @@ function escapeHtml(str) {
 }
 
 window.exportFullHistory = exportFullHistory;
+
+

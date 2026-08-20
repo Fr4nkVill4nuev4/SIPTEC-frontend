@@ -3,13 +3,15 @@
  * Maneja listado y modales de usuarios.
  */
 let currentUsers = [];
+let currentRoles = [];
+let currentInstitutions = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   initUsersController();
 });
 
 async function initUsersController() {
-  await loadUsers();
+  await Promise.all([loadUsers(), loadUserCatalogs()]);
   bindUsersEvents();
 }
 
@@ -20,13 +22,49 @@ async function loadUsers() {
       renderUsersTable(currentUsers);
     }
   } catch (error) {
-    console.warn("Usando filas maquetadas en HTML de usuarios.", error);
+    console.warn("No se pudo cargar usuarios desde la API.", error);
+    currentUsers = [];
+    renderUsersTable([]);
   }
+}
+
+async function loadUserCatalogs() {
+  try {
+    if (!window.usersService) return;
+    const [roles, institutions] = await Promise.all([
+      window.usersService.getRoles(),
+      window.usersService.getInstitutions()
+    ]);
+    currentRoles = roles;
+    currentInstitutions = institutions;
+    renderSelectOptions("#userRole", currentRoles, "Seleccione un rol");
+    renderSelectOptions("#userSection", currentInstitutions, "Seleccione una institución");
+    renderSelectOptions("#editUserRole", currentRoles, "Seleccione un rol");
+    renderSelectOptions("#editUserSection", currentInstitutions, "Seleccione una institución");
+  } catch (error) {
+    console.warn("No se pudieron cargar roles o instituciones.", error);
+    renderSelectOptions("#userRole", [], "Sin roles disponibles");
+    renderSelectOptions("#userSection", [], "Sin instituciones disponibles");
+  }
+}
+
+function renderSelectOptions(selector, items, placeholder) {
+  const select = document.querySelector(selector);
+  if (!select) return;
+
+  select.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + items.map(item => `
+    <option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>
+  `).join("");
 }
 
 function renderUsersTable(users) {
   const tbody = document.querySelector("#usersTableBody");
   if (!tbody || !users) return;
+
+  if (!users.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="text-muted py-4">No hay usuarios disponibles desde la API.</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = users.map(u => {
     const fullName = u.name || `${u.firstName || ""} ${u.lastName || ""}`.trim() || "Usuario";
@@ -36,8 +74,8 @@ function renderUsersTable(users) {
       <tr data-id="${u.id}">
         <td><strong>${escapeHtml(fullName)}</strong></td>
         <td>${escapeHtml(u.email)}</td>
-        <td>${escapeHtml(u.role || "EMPLEADO")}</td>
-        <td>${escapeHtml(u.section || u.institution || "ITR")}</td>
+        <td>${escapeHtml(resolveRoleName(u))}</td>
+        <td>${escapeHtml(resolveInstitutionName(u))}</td>
         <td><span class="badge-pill-state activo">${isActive ? "Activo" : "Inactivo"}</span></td>
         <td>
           <div class="action-btn-group">
@@ -61,28 +99,54 @@ function bindUsersEvents() {
       const filtered = currentUsers.filter(u =>
         (u.name && u.name.toLowerCase().includes(q)) ||
         (u.email && u.email.toLowerCase().includes(q)) ||
-        (u.role && u.role.toLowerCase().includes(q)) ||
-        (u.section && u.section.toLowerCase().includes(q))
+        (resolveRoleName(u).toLowerCase().includes(q)) ||
+        (resolveInstitutionName(u).toLowerCase().includes(q))
       );
       renderUsersTable(filtered);
     });
   }
 
-  // Formulario Crear Usuario
+  const refreshBtn = document.querySelector("#refreshBtn");
+  if (refreshBtn) {
+    refreshBtn.addEventListener("click", async () => {
+      await Promise.all([loadUsers(), loadUserCatalogs()]);
+      showToast("Usuarios actualizados.", "success");
+    });
+  }
+
   const userForm = document.querySelector("#createUserForm");
   if (userForm) {
     userForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.querySelector("#userFullName").value.trim();
       const email = document.querySelector("#userEmail").value.trim();
-      const role = document.querySelector("#userRole").value;
-      const section = document.querySelector("#userSection").value;
+      const password = document.querySelector("#userPassword").value;
+      const roleId = document.querySelector("#userRole").value;
+      const institutionId = document.querySelector("#userSection").value;
+
+      if (name.split(/\s+/).filter(Boolean).length < 2) {
+        showToast("Ingrese nombre y apellido del usuario.", "error");
+        return;
+      }
+
+      if (!roleId || !institutionId) {
+        showToast("Seleccione rol e institución antes de guardar.", "error");
+        return;
+      }
 
       try {
-        await window.usersService.create({ name, email, role, section, active: true });
+        await window.usersService.create({
+          name,
+          email,
+          password,
+          rol: Number(roleId),
+          institucion: Number(institutionId)
+        });
         showToast("Usuario creado exitosamente.", "success");
         closeBootstrapModal("createUserModal");
         userForm.reset();
+        renderSelectOptions("#userRole", currentRoles, "Seleccione un rol");
+        renderSelectOptions("#userSection", currentInstitutions, "Seleccione una institución");
         await loadUsers();
       } catch (err) {
         showToast(err.message || "Error al crear usuario.", "error");
@@ -90,7 +154,6 @@ function bindUsersEvents() {
     });
   }
 
-  // Formulario Editar Usuario
   const editUserForm = document.querySelector("#editUserForm");
   if (editUserForm) {
     editUserForm.addEventListener("submit", async (e) => {
@@ -98,11 +161,17 @@ function bindUsersEvents() {
       const id = Number(document.querySelector("#editUserId").value);
       const name = document.querySelector("#editUserFullName").value.trim();
       const email = document.querySelector("#editUserEmail").value.trim();
-      const role = document.querySelector("#editUserRole").value;
-      const section = document.querySelector("#editUserSection").value;
+      const roleId = document.querySelector("#editUserRole").value;
+      const institutionId = document.querySelector("#editUserSection").value;
 
       try {
-        await window.usersService.update(id, { name, email, role, section });
+        await window.usersService.update(id, {
+          name,
+          email,
+          rol: roleId ? Number(roleId) : null,
+          institucion: institutionId ? Number(institutionId) : null,
+          password: currentUsers.find(u => u.id === id)?.raw?.passwordHash || "actualizar"
+        });
         showToast("Usuario actualizado correctamente.", "success");
         closeBootstrapModal("editUserModal");
         await loadUsers();
@@ -120,10 +189,22 @@ function openEditUserModal(id) {
   document.querySelector("#editUserId").value = user.id;
   document.querySelector("#editUserFullName").value = user.name || `${user.firstName || ""} ${user.lastName || ""}`.trim();
   document.querySelector("#editUserEmail").value = user.email || "";
-  document.querySelector("#editUserRole").value = user.role || "EMPLEADO";
-  document.querySelector("#editUserSection").value = user.section || user.institution || "ITR";
+  document.querySelector("#editUserRole").value = user.rol || "";
+  document.querySelector("#editUserSection").value = user.institution || "";
 
   openBootstrapModal("editUserModal");
+}
+
+function resolveRoleName(user) {
+  if (user.role && !/^ROL \d+$/i.test(user.role)) return user.role;
+  const role = currentRoles.find(item => Number(item.id) === Number(user.rol));
+  return role ? role.name : (user.role || "-");
+}
+
+function resolveInstitutionName(user) {
+  if (user.section && !/^Institucion \d+$/i.test(user.section)) return user.section;
+  const institution = currentInstitutions.find(item => Number(item.id) === Number(user.institution));
+  return institution ? institution.name : (user.section || "-");
 }
 
 function openBootstrapModal(modalId) {
@@ -161,3 +242,5 @@ function escapeHtml(str) {
 }
 
 window.openEditUserModal = openEditUserModal;
+
+

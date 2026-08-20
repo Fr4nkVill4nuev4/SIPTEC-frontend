@@ -21,7 +21,9 @@ async function loadReports() {
       renderReportsGrid();
     }
   } catch (error) {
-    console.warn("Usando tarjetas maquetadas en HTML de reportes.", error);
+    console.warn("No se pudo cargar reportes desde la API.", error);
+    currentReports = [];
+    renderReportsGrid();
   }
 }
 
@@ -162,3 +164,5 @@ function escapeHtml(str) {
 window.openReportViewer = openReportViewer;
 window.exportSingleReport = exportSingleReport;
 window.deleteReportDirect = deleteReportDirect;
+
+

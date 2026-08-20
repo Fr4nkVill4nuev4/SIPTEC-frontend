@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -51,6 +51,10 @@
         <a href="history.html" class="nav-link-item active">
           <i class="bi bi-clock-history"></i>
           <span>Historial</span>
+        </a>
+        <a href="tipo-area.html" class="nav-link-item">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <span>Tipo<br>área</span>
         </a>
         <a href="settings.html" class="nav-link-item">
           <i class="bi bi-gear-fill"></i>
@@ -123,48 +127,7 @@
                 <th>Estado</th>
               </tr>
             </thead>
-            <tbody id="historyTableBody">
-              <tr>
-                <td><strong>EQP-065</strong></td>
-                <td>Equipo de sonido</td>
-                <td>2026-06-13</td>
-                <td>2026-07-17</td>
-                <td>Marco Perez</td>
-                <td><span class="badge-pill-state devuelto">Devuelto</span></td>
-              </tr>
-              <tr>
-                <td><strong>EQP-065</strong></td>
-                <td>Equipo de sonido</td>
-                <td>2026-06-12</td>
-                <td>2026-06-13</td>
-                <td>Henry</td>
-                <td><span class="badge-pill-state devuelto">Devuelto</span></td>
-              </tr>
-              <tr>
-                <td><strong>SOL-001</strong></td>
-                <td>Soldadora</td>
-                <td>2026-06-10</td>
-                <td>2026-06-13</td>
-                <td>Karla</td>
-                <td><span class="badge-pill-state prestado">Prestado</span></td>
-              </tr>
-              <tr>
-                <td><strong>MRT-009</strong></td>
-                <td>Martillo</td>
-                <td>2026-06-10</td>
-                <td>2026-06-13</td>
-                <td>Carlos</td>
-                <td><span class="badge-pill-state retrasado">Retrasado</span></td>
-              </tr>
-              <tr>
-                <td><strong>CAA-120</strong></td>
-                <td>Cautin</td>
-                <td>2026-06-08</td>
-                <td>2026-06-09</td>
-                <td>Brandon</td>
-                <td><span class="badge-pill-state disponible">Disponible</span></td>
-              </tr>
-            </tbody>
+            <tbody id="historyTableBody"></tbody>
           </table>
         </div>
       </section>
@@ -176,8 +139,15 @@
   <script src="../config.js"></script>
   <script src="../services/api.service.js"></script>
   <script src="../services/auth.service.js"></script>
+  <script src="../services/loans.service.js"></script>
   <script src="../services/history.service.js"></script>
   <script src="../controllers/layout.controller.js"></script>
   <script src="../controllers/history.controller.js"></script>
 </body>
 </html>
+
+
+
+
+
+

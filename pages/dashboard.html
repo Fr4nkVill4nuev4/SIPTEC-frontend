@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -51,6 +51,10 @@
         <a href="history.html" class="nav-link-item">
           <i class="bi bi-clock-history"></i>
           <span>Historial</span>
+        </a>
+        <a href="tipo-area.html" class="nav-link-item">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <span>Tipo<br>área</span>
         </a>
         <a href="settings.html" class="nav-link-item">
           <i class="bi bi-gear-fill"></i>
@@ -110,7 +114,7 @@
               <i class="bi bi-box-seam"></i>
             </div>
             <div>
-              <div id="statTotalItems" class="stat-value">6</div>
+              <div id="statTotalItems" class="stat-value">0</div>
               <div class="stat-label">Inventario</div>
             </div>
           </div>
@@ -121,7 +125,7 @@
               <i class="bi bi-check2"></i>
             </div>
             <div>
-              <div id="statAvailableItems" class="stat-value">3</div>
+              <div id="statAvailableItems" class="stat-value">0</div>
               <div class="stat-label">Disponibles</div>
             </div>
           </div>
@@ -132,7 +136,7 @@
               <i class="bi bi-arrow-left-right"></i>
             </div>
             <div>
-              <div id="statActiveLoans" class="stat-value">2</div>
+              <div id="statActiveLoans" class="stat-value">0</div>
               <div class="stat-label">Préstamos</div>
             </div>
           </div>
@@ -143,7 +147,7 @@
               <i class="bi bi-bell"></i>
             </div>
             <div>
-              <div id="statPendingReturns" class="stat-value">1</div>
+              <div id="statPendingReturns" class="stat-value">0</div>
               <div class="stat-label">Solicitudes</div>
             </div>
           </div>
@@ -154,48 +158,26 @@
           <!-- PRÉSTAMOS POR SEMANA -->
           <div class="panel-box">
             <div class="panel-title">Préstamos por semana</div>
-            <div class="bar-chart-container">
-              <div class="bar-col">
-                <div class="bar-fill" style="height: 38%;">38</div>
-              </div>
-              <div class="bar-col">
-                <div class="bar-fill" style="height: 72%;">72</div>
-              </div>
-              <div class="bar-col">
-                <div class="bar-fill" style="height: 64%;">64</div>
-              </div>
-              <div class="bar-col">
-                <div class="bar-fill" style="height: 82%;">82</div>
-              </div>
-              <div class="bar-col">
-                <div class="bar-fill" style="height: 55%;">55</div>
-              </div>
-              <div class="bar-col">
-                <div class="bar-fill" style="height: 44%;">44</div>
-              </div>
-              <div class="bar-col">
-                <div class="bar-fill" style="height: 30%;">30</div>
-              </div>
-            </div>
+            <div id="weeklyLoansChart" class="bar-chart-container"></div>
           </div>
 
           <!-- ESTADO DEL INVENTARIO -->
           <div class="panel-box">
             <div class="panel-title">Estado del inventario</div>
             <div class="pie-chart-wrap">
-              <div class="css-pie"></div>
+              <div id="inventoryPieChart" class="css-pie is-empty"></div>
               <div class="pie-legend">
                 <div class="legend-item">
                   <span class="legend-dot" style="background-color: #1880e6;"></span>
-                  <span id="legendAvailable">Disponible 3</span>
+                  <span id="legendAvailable">Disponible 0</span>
                 </div>
                 <div class="legend-item">
                   <span class="legend-dot" style="background-color: #22c55e;"></span>
-                  <span id="legendBorrowed">Prestado 2</span>
+                  <span id="legendBorrowed">Prestado 0</span>
                 </div>
                 <div class="legend-item">
                   <span class="legend-dot" style="background-color: #eab308;"></span>
-                  <span id="legendMaintenance">Dañados 1</span>
+                  <span id="legendMaintenance">Dañados 0</span>
                 </div>
               </div>
             </div>
@@ -217,40 +199,7 @@
                   <th>Estado</th>
                 </tr>
               </thead>
-              <tbody id="recentActivityTable">
-                <tr>
-                  <td><strong>EQP-065</strong></td>
-                  <td>Equipo de sonido</td>
-                  <td>2026-06-13</td>
-                  <td>2026-07-17</td>
-                  <td>Marco Perez</td>
-                  <td><span class="badge-pill-state devuelto">Devuelto</span></td>
-                </tr>
-                <tr>
-                  <td><strong>EQP-065</strong></td>
-                  <td>Equipo de sonido</td>
-                  <td>2026-06-12</td>
-                  <td>2026-06-13</td>
-                  <td>Henry</td>
-                  <td><span class="badge-pill-state devuelto">Devuelto</span></td>
-                </tr>
-                <tr>
-                  <td><strong>SOL-001</strong></td>
-                  <td>Soldadora</td>
-                  <td>2026-06-10</td>
-                  <td>2026-06-13</td>
-                  <td>Karla</td>
-                  <td><span class="badge-pill-state prestado">Prestado</span></td>
-                </tr>
-                <tr>
-                  <td><strong>MRT-009</strong></td>
-                  <td>Martillo</td>
-                  <td>2026-06-10</td>
-                  <td>2026-06-13</td>
-                  <td>Carlos</td>
-                  <td><span class="badge-pill-state retrasado">Retrasado</span></td>
-                </tr>
-              </tbody>
+              <tbody id="recentActivityTable"></tbody>
             </table>
           </div>
         </div>
@@ -270,3 +219,11 @@
   <script src="../controllers/dashboard.controller.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
