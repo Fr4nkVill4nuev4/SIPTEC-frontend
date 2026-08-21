@@ -1,6 +1,6 @@
 /**
  * SIPTEC - Servicio de Marcas
- * Consume el endpoint /api/marca de la API Spring Boot.
+ * Tabla MARCA. Consume el endpoint /api/marca de la API Spring Boot.
  */
 const brandsService = {
   async getAll() {
@@ -14,6 +14,35 @@ const brandsService = {
 
   getName(item) {
     return item.nombreMarca || item.nombre || item.name || "Sin marca";
+  },
+
+  mapToApi(item) {
+    return {
+      id: item.id || 0,
+      nombreMarca: item.nombreMarca || item.name || item.nombre || ""
+    };
+  },
+
+  async getById(id) {
+    return await apiService.request(`${SIPTEC_CONFIG.ENDPOINTS.BRANDS}/${id}`, { method: "GET" });
+  },
+
+  async create(itemData) {
+    return await apiService.request(SIPTEC_CONFIG.ENDPOINTS.BRANDS, {
+      method: "POST",
+      body: JSON.stringify(this.mapToApi(itemData))
+    });
+  },
+
+  async update(id, itemData) {
+    return await apiService.request(`${SIPTEC_CONFIG.ENDPOINTS.BRANDS}/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(this.mapToApi({ ...itemData, id }))
+    });
+  },
+
+  async delete(id) {
+    return await apiService.request(`${SIPTEC_CONFIG.ENDPOINTS.BRANDS}/${id}`, { method: "DELETE" });
   }
 };
 

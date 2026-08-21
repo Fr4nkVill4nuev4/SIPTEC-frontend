@@ -28,15 +28,29 @@ SIPTEC-frontend/
 │   ├── reports.controller.js   # Pestañas de reportes, visor modal y descargas
 │   ├── history.controller.js   # Historial y exportaciones
 │   └── settings.controller.js  # Ajustes de perfil, tema y URL del backend Java
-├── services/                   # Capa de consumo de API Java Spring Boot
+├── services/                   # Capa de consumo de API Java Spring Boot (un service por tabla/menu)
 │   ├── api.service.js          # Cliente HTTP con detección de disponibilidad y fallback mock
 │   ├── auth.service.js         # Endpoint /api/auth/login
-│   ├── inventory.service.js    # Endpoints /api/inventory (CRUD)
-│   ├── loans.service.js        # Endpoints /api/loans (Solicitudes y Estados)
-│   ├── returns.service.js      # Endpoints /api/returns (Devoluciones e Incidentes)
-│   ├── users.service.js        # Endpoints /api/users (Usuarios y Roles)
-│   ├── reports.service.js      # Endpoints /api/reports (Reportes)
-│   ├── history.service.js      # Endpoints /api/history (Historial)
+│   ├── inventory.service.js    # HERRAMIENTAS        -> /api/herramientas
+│   ├── tool-details.service.js # DETALLE_HERRAMIENTAS-> /api/detalle-herramienta
+│   ├── tool-status.service.js  # ESTADO_HERRAMIENTA  -> /api/estadoHerramienta
+│   ├── brands.service.js       # MARCA               -> /api/marca
+│   ├── categories.service.js   # CATEGORIA           -> /api/categoria
+│   ├── tool-categories.service.js # HERRAMIENTA_CATEGORIA -> /api/herramientaCategoria
+│   ├── areas.service.js        # AREAS               -> /api/area
+│   ├── area-types.service.js   # TIPO_AREA           -> /api/tipoArea
+│   ├── loans.service.js        # PRESTAMO            -> /api/prestamo
+│   ├── loan-status.service.js  # ESTADO_PRESTAMO     -> /api/estado
+│   ├── loan-details.service.js # DETALLE_PRESTAMO_HERRAMIENTAS -> /api/detallePrestamoHerramienta
+│   ├── loan-area-details.service.js # DETALLE_PRESTAMO_AREAS   -> /api/detallePrestamoArea
+│   ├── users.service.js        # USUARIOS            -> /api/usuarios
+│   ├── roles.service.js        # ROLES               -> /api/roles
+│   ├── permissions.service.js  # PERMISO             -> /api/permisos
+│   ├── role-permissions.service.js # ROL_PERMISO     -> /api/rolPermiso
+│   ├── institutions.service.js # INSTITUCIONES       -> /api/instituciones
+│   ├── returns.service.js      # Menu Devoluciones (derivado de PRESTAMO)
+│   ├── reports.service.js      # Menu Reportes (derivado de PRESTAMO + HERRAMIENTAS)
+│   ├── history.service.js      # Menu Historial (derivado de PRESTAMO)
 │   └── mock.data.js            # Datos simulados de respaldo para Modo Maquetado (Offline)
 ├── css/
 │   └── styles.css              # Hoja de estilos con diseño fiel a Figma (Light & Dark theme)
