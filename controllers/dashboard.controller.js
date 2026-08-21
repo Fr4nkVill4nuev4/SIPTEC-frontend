@@ -16,10 +16,9 @@ async function loadDashboardData() {
         : "Bienvenido, Admin Principal";
     }
 
-    const [items, loans, returns] = await Promise.all([
+    const [items, loans] = await Promise.all([
       window.inventoryService ? window.inventoryService.getAll() : [],
-      window.loansService ? window.loansService.getAll() : [],
-      window.returnsService ? window.returnsService.getAll() : []
+      window.loansService ? window.loansService.getAll() : []
     ]);
 
     const totalItems = items.length;
@@ -41,13 +40,13 @@ async function loadDashboardData() {
 
     renderWeeklyLoansChart(loans);
     renderInventoryPie(availableItems, activeLoans, damagedItems);
-    renderRecentActivity(loans, returns);
+    renderRecentActivity(loans);
   } catch (error) {
     console.warn("Error al refrescar dashboard desde la API.", error);
     ["#statTotalItems", "#statActiveLoans", "#statPendingReturns", "#statAvailableItems"].forEach(selector => setText(selector, "0"));
     renderWeeklyLoansChart([]);
     renderInventoryPie(0, 0, 0);
-    renderRecentActivity([], []);
+    renderRecentActivity([]);
   }
 }
 
@@ -89,11 +88,12 @@ function renderInventoryPie(available, borrowed, damaged) {
   setText("#legendMaintenance", `Dañados ${damaged}`);
 }
 
-function renderRecentActivity(loans, returns) {
+function renderRecentActivity(loans) {
   const tbody = document.querySelector("#recentActivityTable");
   if (!tbody) return;
 
-  const rows = [...loans, ...returns]
+  const rows = loans
+    .filter((item, index, arr) => arr.findIndex(other => Number(other.id) === Number(item.id)) === index)
     .sort((a, b) => String(getLoanStartDate(b) || "").localeCompare(String(getLoanStartDate(a) || "")))
     .slice(0, 5);
 
@@ -107,16 +107,15 @@ function renderRecentActivity(loans, returns) {
     return `
       <tr>
         <td><strong>${escapeHtml(item.code || item.toolCode || item.id || "-")}</strong></td>
-        <td>${escapeHtml(item.product || item.toolName || item.name || "-")}</td>
+        <td>${escapeHtml(item.product || item.toolName || item.name || "Prestamo")}</td>
         <td>${escapeHtml(formatDate(getLoanStartDate(item)))}</td>
-        <td>${escapeHtml(formatDate(item.endDate || item.returnDate || item.deliveryDate))}</td>
+        <td>${escapeHtml(formatDate(item.expectedDate || item.endDate || item.returnDate || item.deliveryDate))}</td>
         <td>${escapeHtml(item.userName || item.user || item.employee || "-")}</td>
         <td><span class="badge-pill-state ${statusClass(state)}">${escapeHtml(state)}</span></td>
       </tr>
     `;
   }).join("");
 }
-
 function buildLastSevenDays() {
   const today = new Date();
   return Array.from({ length: 7 }, (_, index) => {
@@ -175,3 +174,7 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
+
+
+
+

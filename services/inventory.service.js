@@ -9,6 +9,7 @@ const inventoryService = {
       code: item.codigo || item.codInv || `HER-${String(item.idHerramienta || item.id || "").padStart(3, "0")}`,
       name: item.nombreHerramienta || item.name || "",
       category: item.nombreCategoria || item.category || "",
+      brand: item.nombreMarca || item.marca || item.brand || item.descripcionMarca || item.raw?.nombreMarca || "-",
       area: item.nombreArea || item.area || (item.idArea ? `Area ${item.idArea}` : ""),
       acquiredAt: item.fechaAdquisicion || item.acquiredAt || "",
       status: item.nombreEstadoHerramienta || item.status || (Number(item.stock || 0) > 0 ? "Disponible" : "Prestado"),
@@ -23,6 +24,8 @@ const inventoryService = {
       nombreHerramienta: item.nombreHerramienta || item.name || item.nombre || "",
       descripcionHerramienta: item.descripcionHerramienta || item.description || item.descripcion || "",
       stock: Number.isFinite(Number(item.stock)) ? Number(item.stock) : 1,
+      idMarca: item.idMarca || item.brandId || null,
+      nombreMarca: item.nombreMarca || item.brand || item.marca || "",
       idArea: item.idArea || item.areaId || null
     };
   },
@@ -54,3 +57,7 @@ const inventoryService = {
 };
 
 window.inventoryService = inventoryService;
+
+
+
+

@@ -80,6 +80,7 @@ function renderUsersTable(users) {
         <td>
           <div class="action-btn-group">
             <button class="btn-table-action" onclick="openEditUserModal(${u.id})" title="Editar"><i class="bi bi-pencil"></i></button>
+            <button class="btn-table-action delete" onclick="deleteUserDirect(${u.id})" title="Eliminar"><i class="bi bi-trash"></i></button>
           </div>
         </td>
       </tr>
@@ -118,13 +119,15 @@ function bindUsersEvents() {
   if (userForm) {
     userForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = document.querySelector("#userFullName").value.trim();
+      const firstName = document.querySelector("#userFirstName").value.trim();
+      const lastName = document.querySelector("#userLastName").value.trim();
+      const name = `${firstName} ${lastName}`.trim();
       const email = document.querySelector("#userEmail").value.trim();
       const password = document.querySelector("#userPassword").value;
       const roleId = document.querySelector("#userRole").value;
       const institutionId = document.querySelector("#userSection").value;
 
-      if (name.split(/\s+/).filter(Boolean).length < 2) {
+      if (!firstName || !lastName) {
         showToast("Ingrese nombre y apellido del usuario.", "error");
         return;
       }
@@ -137,6 +140,8 @@ function bindUsersEvents() {
       try {
         await window.usersService.create({
           name,
+          firstName,
+          lastName,
           email,
           password,
           rol: Number(roleId),
@@ -159,7 +164,9 @@ function bindUsersEvents() {
     editUserForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const id = Number(document.querySelector("#editUserId").value);
-      const name = document.querySelector("#editUserFullName").value.trim();
+      const firstName = document.querySelector("#editUserFirstName").value.trim();
+      const lastName = document.querySelector("#editUserLastName").value.trim();
+      const name = `${firstName} ${lastName}`.trim();
       const email = document.querySelector("#editUserEmail").value.trim();
       const roleId = document.querySelector("#editUserRole").value;
       const institutionId = document.querySelector("#editUserSection").value;
@@ -167,6 +174,8 @@ function bindUsersEvents() {
       try {
         await window.usersService.update(id, {
           name,
+          firstName,
+          lastName,
           email,
           rol: roleId ? Number(roleId) : null,
           institucion: institutionId ? Number(institutionId) : null,
@@ -187,7 +196,8 @@ function openEditUserModal(id) {
   if (!user) return;
 
   document.querySelector("#editUserId").value = user.id;
-  document.querySelector("#editUserFullName").value = user.name || `${user.firstName || ""} ${user.lastName || ""}`.trim();
+  document.querySelector("#editUserFirstName").value = user.firstName || "";
+  document.querySelector("#editUserLastName").value = user.lastName || "";
   document.querySelector("#editUserEmail").value = user.email || "";
   document.querySelector("#editUserRole").value = user.rol || "";
   document.querySelector("#editUserSection").value = user.institution || "";
@@ -195,6 +205,28 @@ function openEditUserModal(id) {
   openBootstrapModal("editUserModal");
 }
 
+
+async function deleteUserDirect(id) {
+  const user = currentUsers.find(u => Number(u.id) === Number(id));
+  if (!user) return;
+
+  const currentUser = window.apiService ? window.apiService.getCurrentUser() : null;
+  if (currentUser && Number(currentUser.id) === Number(id)) {
+    showToast("No puedes eliminar el usuario con el que estás conectado.", "warning");
+    return;
+  }
+
+  const fullName = user.name || `${user.firstName || ""} ${user.lastName || ""}`.trim() || "este usuario";
+  if (!confirm(`¿Deseas eliminar a ${fullName}? Esta acción no se puede deshacer.`)) return;
+
+  try {
+    await window.usersService.delete(id);
+    showToast("Usuario eliminado correctamente.", "success");
+    await loadUsers();
+  } catch (err) {
+    showToast(err.message || "No se pudo eliminar el usuario.", "error");
+  }
+}
 function resolveRoleName(user) {
   if (user.role && !/^ROL \d+$/i.test(user.role)) return user.role;
   const role = currentRoles.find(item => Number(item.id) === Number(user.rol));
@@ -242,5 +274,11 @@ function escapeHtml(str) {
 }
 
 window.openEditUserModal = openEditUserModal;
+window.deleteUserDirect = deleteUserDirect;
+
+
+
+
+
 
 

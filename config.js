@@ -4,6 +4,7 @@
  */
 const SIPTEC_CONFIG = {
   API_BASE_URL: localStorage.getItem("siptec_api_url") || "http://localhost:8080",
+  AUTH_API_BASE_URL: localStorage.getItem("siptec_auth_api_url") || "http://localhost:8081",
   REQUEST_TIMEOUT_MS: 5000,
 
   SESSION_STORAGE_KEY: "siptec_session",
@@ -23,6 +24,7 @@ const SIPTEC_CONFIG = {
     BRANDS: "/api/marca",
     LOANS: "/api/prestamo",
     LOAN_DETAILS: "/api/detallePrestamoHerramienta",
+    LOAN_AREA_DETAILS: "/api/detallePrestamoArea",
     LOAN_STATUS: "/api/estado",
     RETURNS: "/api/prestamo",
     USERS: "/api/usuarios",
@@ -47,4 +49,6 @@ const SIPTEC_CONFIG = {
 };
 
 window.SIPTEC_CONFIG = SIPTEC_CONFIG;
+
+
 

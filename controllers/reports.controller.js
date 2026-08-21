@@ -45,7 +45,7 @@ function renderReportsGrid() {
     const badgeClass = isDamage ? "daniado" : "activo";
 
     return `
-      <div class="report-card-figma" data-id="${rep.id}">
+      <article class="report-card-figma" data-id="${rep.id}">
         <div class="d-flex justify-content-between align-items-center">
           <strong style="font-size: 15px;">${escapeHtml(rep.title)}</strong>
           <span class="badge-pill-state ${badgeClass}">${escapeHtml(rep.type || "General")}</span>
@@ -67,13 +67,13 @@ function renderReportsGrid() {
           </div>
           <button class="btn-report-trash" onclick="deleteReportDirect(${rep.id})" title="Eliminar"><i class="bi bi-trash"></i></button>
         </div>
-      </div>
+      </article>
     `;
   }).join("");
 }
 
 function bindReportsEvents() {
-  const tabs = document.querySelectorAll(".report-tab-pill");
+  const tabs = document.querySelectorAll(".rpt-tab");
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
       tabs.forEach(t => t.classList.remove("active"));
@@ -164,5 +164,6 @@ function escapeHtml(str) {
 window.openReportViewer = openReportViewer;
 window.exportSingleReport = exportSingleReport;
 window.deleteReportDirect = deleteReportDirect;
+
 
 

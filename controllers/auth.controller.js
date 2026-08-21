@@ -26,7 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const data = await window.authService.login(email, password);
         window.authService.saveSession(data.token, data.user);
-        window.location.href = "pages/dashboard.html";
+        const role = String(data.user?.role || "").toUpperCase();
+        const isLimited = role === "PROFESOR" || role === "USUARIO" || role === "USER";
+        window.location.href = isLimited ? "pages/inventory.html" : "pages/dashboard.html";
       } catch (error) {
         showError("Credenciales incorrectas o el servidor no está disponible.");
       } finally {
@@ -45,3 +47,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
+

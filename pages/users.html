@@ -30,7 +30,7 @@
         </a>
         <a href="inventory.html" class="nav-link-item">
           <i class="bi bi-box-seam"></i>
-          <span>Inventario</span>
+          <span>Herramientas<br>Áreas</span>
         </a>
         <a href="loans.html" class="nav-link-item">
           <i class="bi bi-arrow-left-right"></i>
@@ -135,16 +135,20 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body row g-3">
-          <div class="col-12">
-            <label class="form-label" for="userFullName">Nombre completo</label>
-            <input id="userFullName" class="form-control" required>
+          <div class="col-6">
+            <label class="form-label" for="userFirstName">Nombre</label>
+            <input id="userFirstName" class="form-control" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label" for="userLastName">Apellido</label>
+            <input id="userLastName" class="form-control" required>
           </div>
           <div class="col-12">
             <label class="form-label" for="userEmail">Correo electrónico</label>
             <input id="userEmail" class="form-control" type="email" required>
           </div>
           <div class="col-12">
-            <label class="form-label" for="userPassword">Contraseña temporal</label>
+            <label class="form-label" for="userPassword">Contraseña</label>
             <input id="userPassword" class="form-control" type="password" minlength="5" required autocomplete="new-password">
           </div>
           <div class="col-6">
@@ -178,9 +182,13 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body row g-3">
-          <div class="col-12">
-            <label class="form-label" for="editUserFullName">Nombre</label>
-            <input id="editUserFullName" class="form-control" required>
+          <div class="col-6">
+            <label class="form-label" for="editUserFirstName">Nombre</label>
+            <input id="editUserFirstName" class="form-control" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label" for="editUserLastName">Apellido</label>
+            <input id="editUserLastName" class="form-control" required>
           </div>
           <div class="col-12">
             <label class="form-label" for="editUserEmail">Correo electrónico</label>
@@ -220,6 +228,8 @@
   <script src="../controllers/users.controller.js?v=users-api-2"></script>
 </body>
 </html>
+
+
 
 
 

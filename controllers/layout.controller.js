@@ -10,6 +10,7 @@ function initLayout() {
   initTheme();
   initDate();
   initUserProfile();
+  applyRoleAccess();
   highlightActiveNav();
 
   // Botón de refresco
@@ -77,6 +78,61 @@ function highlightActiveNav() {
   });
 }
 
+function getCurrentRoleName() {
+  const user = window.apiService ? window.apiService.getCurrentUser() : null;
+  return String(user?.role || "ADMINISTRADOR").trim().toUpperCase();
+}
+
+function isLimitedUser() {
+  const role = getCurrentRoleName();
+  return role === "PROFESOR" || role === "USUARIO" || role === "USER";
+}
+
+function applyRoleAccess() {
+  if (!isLimitedUser()) return;
+
+  const allowedPages = new Set(["inventory.html", "loans.html", "history.html"]);
+  const currentPage = (window.location.pathname.split(/[\\/]/).pop() || "").toLowerCase();
+
+  if (currentPage && !allowedPages.has(currentPage)) {
+    window.location.replace("inventory.html");
+    return;
+  }
+
+  document.querySelectorAll(".nav-link-item[href]").forEach(link => {
+    const href = (link.getAttribute("href") || "").split("#")[0].toLowerCase();
+    const page = href.split("/").pop();
+    if (page && !allowedPages.has(page)) {
+      link.remove();
+    }
+  });
+}
+
+function getCurrentUserIdentity() {
+  const user = window.apiService ? window.apiService.getCurrentUser() : null;
+  const fullName = `${user?.firstName || ""} ${user?.lastName || ""}`.replace(/\s+/g, " ").trim().toLowerCase();
+  return {
+    id: user?.id == null ? null : Number(user.id),
+    email: String(user?.email || "").trim().toLowerCase(),
+    fullName
+  };
+}
+
+function belongsToCurrentUser(record) {
+  if (!isLimitedUser()) return true;
+  const current = getCurrentUserIdentity();
+  const recordUserId = record?.userId ?? record?.usuarioId ?? record?.idUsuario ?? record?.raw?.idUsuario ?? record?.raw?.usuario?.id;
+  if (current.id != null && recordUserId != null && Number(recordUserId) === current.id) return true;
+
+  const recordEmail = String(record?.email || record?.correo || record?.raw?.correoUsuario || record?.raw?.usuario?.correoUsuario || "").trim().toLowerCase();
+  if (current.email && recordEmail && recordEmail === current.email) return true;
+
+  const recordName = String(record?.user || record?.student || record?.usuario || record?.raw?.nombreUsuario || "").replace(/\s+/g, " ").trim().toLowerCase();
+  return Boolean(current.fullName && recordName && recordName === current.fullName);
+}
+
+window.isLimitedUser = isLimitedUser;
+window.belongsToCurrentUser = belongsToCurrentUser;
 // ==========================================
 // UTILIDADES GLOBALES
 // ==========================================
@@ -120,3 +176,5 @@ function downloadFile(filename, content, type) {
 }
 
 window.downloadFile = downloadFile;
+
+

@@ -1,22 +1,35 @@
 /**
  * SIPTEC - Servicio de Autenticación
- * Conecta con `/api/auth/login` en el backend Java Spring Boot.
+ * Conecta con la API separada ApiAuth.
  */
 const authService = {
   async login(email, password) {
-    return await apiService.request(SIPTEC_CONFIG.ENDPOINTS.AUTH_LOGIN, {
+    const baseUrl = SIPTEC_CONFIG.getAuthApiUrl ? SIPTEC_CONFIG.getAuthApiUrl() : SIPTEC_CONFIG.getApiUrl();
+    const response = await fetch(`${baseUrl}${SIPTEC_CONFIG.ENDPOINTS.AUTH_LOGIN}`, {
       method: "POST",
-      auth: false,
-      body: JSON.stringify({ email, password })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo: email, clave: password })
     });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      token: `auth-session-${data.id || Date.now()}`,
+      user: {
+        id: data.id,
+        firstName: data.nombreUsuario || "",
+        lastName: data.apellidoUsuario || "",
+        email: data.correoUsuario || email,
+        roleId: data.idRol || null,
+        role: data.nombreRol || "USUARIO"
+      }
+    };
   },
 
   async logout() {
-    try {
-      await apiService.request(SIPTEC_CONFIG.ENDPOINTS.AUTH_LOGOUT, { method: "POST" });
-    } catch {
-      // Si la API falla, limpiar localmente
-    }
     sessionStorage.removeItem(SIPTEC_CONFIG.SESSION_STORAGE_KEY);
     localStorage.removeItem(SIPTEC_CONFIG.SESSION_STORAGE_KEY);
     window.location.href = "../index.html";

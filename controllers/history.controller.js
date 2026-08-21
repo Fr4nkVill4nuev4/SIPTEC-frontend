@@ -17,6 +17,9 @@ async function loadHistory() {
   try {
     if (window.historyService) {
       currentHistory = await window.historyService.getAll();
+      if (window.isLimitedUser && window.isLimitedUser()) {
+        currentHistory = currentHistory.filter(item => window.belongsToCurrentUser && window.belongsToCurrentUser(item));
+      }
       renderHistoryTable(currentHistory);
     }
   } catch (error) {
@@ -110,5 +113,6 @@ function escapeHtml(str) {
 }
 
 window.exportFullHistory = exportFullHistory;
+
 
 

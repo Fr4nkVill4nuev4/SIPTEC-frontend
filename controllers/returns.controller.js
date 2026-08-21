@@ -85,13 +85,19 @@ function bindReturnsEvents() {
     damageForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!activeReturnId) return;
-      const desc = document.querySelector("#damageDescription").value;
+      const desc = document.querySelector("#damageDescription").value.trim();
+      if (!desc) {
+        showToast("Describe el daño antes de enviar el reporte.", "warning");
+        return;
+      }
 
       try {
         await window.returnsService.reportDamage(activeReturnId, { description: desc });
         showToast("Reporte de daño registrado correctamente.", "warning");
         closeBootstrapModal("damageModal");
-        await loadReturns();
+        damageForm.reset();
+        removeReturnFromView(activeReturnId);
+        activeReturnId = null;
       } catch (err) {
         showToast(err.message || "Error al reportar daño.", "error");
       }
@@ -99,11 +105,16 @@ function bindReturnsEvents() {
   }
 }
 
+function removeReturnFromView(id) {
+  currentReturns = currentReturns.filter(item => Number(item.id) !== Number(id));
+  renderReturnsGrid(currentReturns);
+}
+
 async function processReturnDirect(id) {
   try {
     await window.returnsService.processReturn(id);
     showToast("Devolución registrada con éxito.", "success");
-    await loadReturns();
+    removeReturnFromView(id);
   } catch (err) {
     showToast("Error al registrar devolución.", "error");
   }
@@ -113,6 +124,11 @@ function openDamageModal(id) {
   activeReturnId = id;
   const ret = currentReturns.find(r => r.id === id);
   if (!ret) return;
+
+  const form = document.querySelector("#reportDamageForm");
+  if (form) form.reset();
+  const textarea = document.querySelector("#damageDescription");
+  if (textarea) textarea.value = "";
 
   const summary = document.querySelector("#damageSummaryText");
   if (summary) {
@@ -158,5 +174,7 @@ function escapeHtml(str) {
 
 window.processReturnDirect = processReturnDirect;
 window.openDamageModal = openDamageModal;
+
+
 
 

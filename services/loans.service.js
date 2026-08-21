@@ -1,24 +1,32 @@
 /**
  * SIPTEC - Servicio de Prestamos
- * Conecta la UI existente con /api/prestamo.
+ * Conecta la UI existente con /api/prestamo y enriquece estados/usuarios.
  */
 const loansService = {
-  mapFromApi(loan) {
+  mapFromApi(loan, lookups = {}) {
     const id = loan.id;
-    const stateText = loan.nombreEstado || loan.state || (loan.estado ? `Estado ${loan.estado}` : "Pendiente");
+    const statusName = lookups.statuses?.get(Number(loan.estado));
+    const user = lookups.users?.get(Number(loan.usuario));
+    const areaDetail = lookups.areaDetails?.get(Number(id));
+    const stateText = loan.nombreEstado || loan.state || statusName || (loan.estado ? `Estado ${loan.estado}` : "Pendiente");
+    const userName = loan.nombreUsuario || loan.user || user?.name || (loan.usuario ? `Usuario ${loan.usuario}` : "");
+    const productName = areaDetail?.nombreArea || loan.nombreArea || loan.nombreHerramienta || loan.product || "Area prestada";
+
     return {
       id,
       code: loan.code || `PR-${String(id || "").padStart(3, "0")}`,
-      user: loan.nombreUsuario || loan.user || (loan.usuario ? `Usuario ${loan.usuario}` : ""),
+      user: userName,
+      userId: loan.usuario || user?.id || null,
       startDate: loan.fechaInicio || "",
       expectedDate: loan.fechaEsperada || "",
       returnedAt: loan.fechaDevolucion || "",
-      product: loan.nombreHerramienta || loan.product || "",
-      description: loan.description || "",
+      product: productName,
+      description: loan.description || `${userName || "Usuario"} solicita ${productName}.`,
       materialState: loan.materialState || stateText,
       state: stateText,
       usuario: loan.usuario || null,
       estado: loan.estado || null,
+      type: areaDetail ? "Area" : (loan.nombreHerramienta ? "Herramienta" : "Prestamo"),
       raw: loan
     };
   },
@@ -35,8 +43,23 @@ const loansService = {
   },
 
   async getAll() {
-    const data = await apiService.request(SIPTEC_CONFIG.ENDPOINTS.LOANS, { method: "GET" });
-    return Array.isArray(data) ? data.map(this.mapFromApi) : [];
+    const [data, statuses, users, areaDetails] = await Promise.all([
+      apiService.request(SIPTEC_CONFIG.ENDPOINTS.LOANS, { method: "GET" }),
+      apiService.request(SIPTEC_CONFIG.ENDPOINTS.LOAN_STATUS, { method: "GET" }).catch(() => []),
+      apiService.request(SIPTEC_CONFIG.ENDPOINTS.USERS, { method: "GET" }).catch(() => []),
+      apiService.request(SIPTEC_CONFIG.ENDPOINTS.LOAN_AREA_DETAILS, { method: "GET" }).catch(() => [])
+    ]);
+
+    const lookups = {
+      statuses: new Map((Array.isArray(statuses) ? statuses : []).map(item => [Number(item.id), item.nombreEstado || item.name])),
+      users: new Map((Array.isArray(users) ? users : []).map(item => [Number(item.id), {
+        id: item.id,
+        name: `${item.nombreUsuario || ""} ${item.apellidoUsuario || ""}`.trim() || item.correoUsuario || `Usuario ${item.id}`
+      }])),
+      areaDetails: new Map((Array.isArray(areaDetails) ? areaDetails : []).map(item => [Number(item.prestamo || item.idPrestamo), item]))
+    };
+
+    return Array.isArray(data) ? data.map(item => this.mapFromApi(item, lookups)) : [];
   },
 
   async create(loanData) {

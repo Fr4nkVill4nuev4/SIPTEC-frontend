@@ -18,6 +18,9 @@ async function loadLoans() {
   try {
     if (window.loansService) {
       currentLoans = await window.loansService.getAll();
+      if (window.isLimitedUser && window.isLimitedUser()) {
+        currentLoans = currentLoans.filter(loan => window.belongsToCurrentUser && window.belongsToCurrentUser(loan));
+      }
       renderLoansTable(currentLoans);
       if (currentLoans.length && !selectedLoanId) {
         selectLoan(currentLoans[1] ? currentLoans[1].id : currentLoans[0].id);
@@ -91,6 +94,9 @@ function clearLoanDetail() {
   if (stateEl) stateEl.textContent = "";
 }
 function bindLoansEvents() {
+  if (window.isLimitedUser && window.isLimitedUser()) {
+    document.querySelectorAll("#btnApproveLoan, #btnRejectLoan").forEach(btn => btn.remove());
+  }
   const searchInput = document.querySelector("#loansSearch, #globalSearch");
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
@@ -150,5 +156,6 @@ function escapeHtml(str) {
 }
 
 window.selectLoan = selectLoan;
+
 
 

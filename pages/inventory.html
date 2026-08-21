@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIPTEC - Inventario</title>
+  <title>SIPTEC - Herramientas / Areas</title>
   <link rel="icon" href="data:,">
   <!-- Bootstrap & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
@@ -30,7 +30,7 @@
         </a>
         <a href="inventory.html" class="nav-link-item active">
           <i class="bi bi-box-seam"></i>
-          <span>Inventario</span>
+          <span>Herramientas<br>Áreas</span>
         </a>
         <a href="loans.html" class="nav-link-item">
           <i class="bi bi-arrow-left-right"></i>
@@ -99,9 +99,19 @@
 
       <!-- VISTA INVENTARIO -->
       <section class="page-container">
-        <div class="page-header">
-          <h1 class="page-title">Inventario</h1>
-          <div class="d-flex align-items-center gap-2">
+        <div class="page-header tools-areas-header">
+          <div>
+            <h1 class="page-title">Herramientas / Áreas</h1>
+            <div class="tools-areas-tabs" role="tablist" aria-label="Secciones de herramientas y áreas">
+              <button class="tools-areas-tab active" type="button" data-tools-tab="tools" aria-selected="true">Herramientas</button>
+              <button class="tools-areas-tab" type="button" data-tools-tab="areas" aria-selected="false">Áreas</button>
+            </div>
+          </div>
+          <div class="tools-actions-panel" data-tools-actions="tools">
+            <div class="tools-inline-search">
+              <i class="bi bi-search"></i>
+              <input id="inventorySearchInline" type="search" placeholder="Buscar por código o nombre...">
+            </div>
             <button class="btn-siptec-filter" data-filter="all">
               <i class="bi bi-funnel"></i> Todo
             </button>
@@ -109,25 +119,52 @@
               <i class="bi bi-plus-lg"></i> Agregar producto
             </button>
           </div>
+          <div class="tools-actions-panel d-none" data-tools-actions="areas">
+            <div class="tools-inline-search">
+              <i class="bi bi-search"></i>
+              <input id="areasSearch" type="search" placeholder="Buscar por nombre de área...">
+            </div>
+            <button class="btn-siptec-green" type="button" disabled title="Disponible cuando la API exponga creación de áreas">
+              <i class="bi bi-plus-lg"></i> Agregar área
+            </button>
+          </div>
         </div>
 
-        <!-- TABLA DE INVENTARIO EXACTA A LA IMAGEN -->
-        <div class="table-panel">
-          <table class="siptec-table">
-            <thead>
-              <tr>
-                <th style="width: 30px;"></th>
-                <th>Código</th>
-                <th>Nombre</th>
-                <th>Categoría</th>
-                <th>Área</th>
-                <th>Adquisición</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="inventoryTableBody"></tbody>
-          </table>
+        <div class="tools-tab-panel" data-tools-panel="tools">
+          <div class="table-panel">
+            <table class="siptec-table">
+              <thead>
+                <tr>
+                  <th style="width: 30px;"></th>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Marca</th>
+                  <th>Categoría</th>
+                  <th>Stock</th>
+                  <th>Área</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tools-tab-panel d-none" data-tools-panel="areas">
+          <div class="table-panel">
+            <table class="siptec-table areas-table">
+              <thead>
+                <tr>
+                  <th>Nombre del área</th>
+                  <th>Tipo de área</th>
+                  <th>Herramientas asignadas</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="areasTableBody"></tbody>
+            </table>
+          </div>
         </div>
       </section>
     </main>
@@ -160,9 +197,19 @@
             <label class="form-label" for="addName">Nombre</label>
             <input id="addName" class="form-control" placeholder="Nombre de herramienta" required>
           </div>
-          <div class="col-12">
+          <div class="col-6">
+            <label class="form-label" for="addBrand">Marca</label>
+            <input id="addBrand" class="form-control" placeholder="Ej. Truper" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label" for="addStock">Stock</label>
+            <input id="addStock" class="form-control" type="number" min="0" step="1" value="1" required>
+          </div>
+          <div class="col-6">
             <label class="form-label" for="addArea">Ubicación / Área</label>
-            <input id="addArea" class="form-control" value="Bodega técnica" required>
+            <select id="addArea" class="form-select" required>
+              <option value="">Cargando áreas...</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">
@@ -200,6 +247,10 @@
             <input id="editName" class="form-control" required>
           </div>
           <div class="col-6">
+            <label class="form-label" for="editBrand">Marca</label>
+            <input id="editBrand" class="form-control" required>
+          </div>
+          <div class="col-6">
             <label class="form-label" for="editCategory">Categoría</label>
             <select id="editCategory" class="form-select">
               <option value="Material de apoyo">Material de apoyo</option>
@@ -210,8 +261,14 @@
             </select>
           </div>
           <div class="col-6">
+            <label class="form-label" for="editStock">Stock</label>
+            <input id="editStock" class="form-control" type="number" min="0" step="1" required>
+          </div>
+          <div class="col-6">
             <label class="form-label" for="editArea">Área</label>
-            <input id="editArea" class="form-control" required>
+            <select id="editArea" class="form-select" required>
+              <option value="">Cargando áreas...</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">
@@ -228,10 +285,21 @@
   <script src="../services/api.service.js"></script>
   <script src="../services/auth.service.js"></script>
   <script src="../services/inventory.service.js"></script>
+  <script src="../services/areas.service.js"></script>
   <script src="../controllers/layout.controller.js"></script>
   <script src="../controllers/inventory.controller.js"></script>
+  <script src="../controllers/areas.controller.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 
