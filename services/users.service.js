@@ -83,6 +83,10 @@ const usersService = {
     return this.mapFromApi(saved || {});
   },
 
+  async delete(id) {
+    return await apiService.request(`${SIPTEC_CONFIG.ENDPOINTS.USERS}/${id}`, { method: "DELETE" });
+  },
+
   async toggleActive(id, active) {
     const current = await apiService.request(`${SIPTEC_CONFIG.ENDPOINTS.USERS}/${id}`, { method: "GET" });
     return this.mapFromApi({ ...(current || {}), active });
